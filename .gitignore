@@ -1,0 +1,10 @@
+*.a
+*.elf
+*.erl
+*.exe
+*.irx
+*.o
+*.swp
+*.tmp
+*.bin
+obj/
