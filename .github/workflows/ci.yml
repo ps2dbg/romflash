@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v*'
+    paths-ignore:
+      - '**.md'
+      - '**.gitkeep'
+      - '**.gitignore'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ps2dev/ps2dev:latest
+    steps:
+
+      - name: Install dependencies
+        run: |
+          apk add build-base git p7zip
+
+      - uses: actions/checkout@v4
+      - run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch --prune --unshallow
+
+      - name: Compile project
+        run: |
+          make -C src
+
+      - name: Pack into 7zip archive
+        run: |
+          7z a -t7z romflash.7z src/*.irx LICENSE README.md
+
+      - name: Upload artifacts
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROMFLASH
+          path: |
+            romflash.7z
+
+      - name: Create release
+        if: github.ref == 'refs/heads/main'
+        uses: mathieucarbou/marvinpinto-action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+          automatic_release_tag: "latest"
+          title: "Latest development build"
+          files: |
+            romflash.7z
+
