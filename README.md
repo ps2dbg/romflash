@@ -4,6 +4,8 @@ romflash reimplementation, based on version 1.33
 
 ## Usage
 
+If you want to run romflash on a device system that does not have DRP installed or set up, set up [RDB](https://github.com/ps2dbg/RDB).  
+Run the following on a host system in a terminal with [dsnet](https://github.com/ps2dbg/dsnet) installed, replacing `myps2` with the IP address of the device running the `dsnetm` instance.  
 ```bash
 dsreset -d myps2 0 7 && dsistart -d myps2 host1:/path/to/romflash.irx -param1 -param2 /path/to/datafile.rom && dsreset -d myps2 0 0
 ```
